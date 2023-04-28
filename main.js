@@ -5,22 +5,24 @@ let ads = document.getElementById('ads');
 let discount = document.getElementById('discount');
 let total = document.getElementById('total');
 let count = document.getElementById('count');
-let category = document.getElementById('catrgory');
+let category = document.getElementById('category');
 let submit = document.getElementById('submit');
 let mood = 'create';
 let temp;
-// get total
+
+// get total function
 function getTotal() {
-    if (price.value != '') {
+    if (price.value && taxes.value) {
         let ertt = (+price.value + +taxes.value + +ads.value) - +discount.value;
         total.innerHTML = ertt;
-
+        total.style.backgroundColor = "#12b012";
     } else {
         total.innerHTML = '';
+        total.style.backgroundColor = "#a00d02";
     }
 }
-//new pro
 
+// getting product information from local storage
 let dataPro;
 if (localStorage.product != null) {
     dataPro = JSON.parse(localStorage.product)
@@ -29,7 +31,7 @@ if (localStorage.product != null) {
 }
 
 
-submit.onclick = function () {
+submit.addEventListener =  () => {
     let newPro = {
         title: title.value.toLowerCase(),
         price: price.value,
@@ -37,11 +39,11 @@ submit.onclick = function () {
         ads: ads.value,
         discount: discount.value,
         total: total.innerHTML,
-        categry: categry.value.toLowerCase(),
+        category: category.value.toLowerCase(),
         count: count.value,
 
     }
-    if (title.value != '' && price.value != '' && categry.value != '' && newPro.count < 100) {
+    if (title.value && price.value && category.value && newPro.count < 100) {
         if (mood === "create") {
             if (newPro.count > 1) {
                 for (let i = 0; i < newPro.count; i++) {
@@ -50,7 +52,6 @@ submit.onclick = function () {
             } else {
                 dataPro.push(newPro);
             }
-
         } else {
             dataPro[temp] = newPro;
             mood = 'create';
@@ -58,14 +59,12 @@ submit.onclick = function () {
             count.style.display = 'block';
         } clearData()
     }
-
-
-
-
+    // updating product information in local storage
     localStorage.setItem('product', JSON.stringify(dataPro))
-
+    // displaying the updated product list
     sowData()
 }
+
 //clear inputs
 function clearData() {
     title.value = '';
@@ -74,23 +73,24 @@ function clearData() {
     ads.value = '';
     discount.value = '';
     total.innerHTML = '';
-    categry.value = '';
+    category.value = '';
     count.value = '';
 }
+
 // read
 function sowData() {
     let table = '';
-    for (let i = 1; i < dataPro.length; i++) {
+    for (let i = 0; i < dataPro.length; i++) {
         table += ` 
             <tr>  
-                        <td>${i}</td>
+                        <td>${i+1}</td>
                         <td>${dataPro[i].title}</td>
                         <td>${dataPro[i].price}</td>
                         <td>${dataPro[i].taxes}</td>
                         <td>${dataPro[i].total}</td>
                         <td>${dataPro[i].ads}</td>
                         <td>${dataPro[i].discount}</td>
-                        <td>${dataPro[i].categry}</td>
+                        <td>${dataPro[i].category}</td>
                         <td><button id"update" onclick="update(${i})">update<button></td>
                         <td><button id"delete" onclick="deleteData(${i})">delete<button></td>   
                     </tr> `
@@ -105,12 +105,15 @@ function sowData() {
     }
 }
 sowData()
-//delete 
+
+// delete 
 function deleteData(i) {
     dataPro.splice(i, 1);
     localStorage.product = JSON.stringify(dataPro);
     sowData()
 }
+
+// delete all data 
 function deleteAll() {
     localStorage.clear()
     dataPro.splice(0)
@@ -122,7 +125,7 @@ function update(i) {
     taxes.value = dataPro[i].taxes;
     ads.value = dataPro[i].ads;
     discount.value = dataPro[i].discount;
-    categry.value = dataPro[i].categry;
+    category.value = dataPro[i].category;
     getTotal()
     count.style.display = 'none';
     submit.innerHTML = "update";
@@ -133,14 +136,15 @@ function update(i) {
         behavior: 'smooth'
     })
 }
+
 //search
-let searchMood = 'categry';
+let searchMood = 'category';
 
 function getsearchMood(id) {
     let search = document.getElementById('Search');
     if (id == 'Searchcategory') {
-        searchMood = 'categry';
-   
+        searchMood = 'category';
+    
     } else if (id == 'Searchtitle'){
         searchMood = 'title'
     }
@@ -152,14 +156,15 @@ function getsearchMood(id) {
 
 }
 
+// search function
 function searchData(value) {
     let table = '';
     for (let i = 0; i < dataPro.length; i++) {
 
 
-        if (searchMood == 'categry') {
+        if (searchMood == 'category') {
 
-            if (dataPro[i].categry.includes(value.toLowerCase())) {
+            if (dataPro[i].category.includes(value.toLowerCase())) {
                 table += ` 
             <tr>  
                         <td>${i}</td>
@@ -169,7 +174,7 @@ function searchData(value) {
                         <td>${dataPro[i].total}</td>
                         <td>${dataPro[i].ads}</td>
                         <td>${dataPro[i].discount}</td>
-                        <td>${dataPro[i].categry}</td>
+                        <td>${dataPro[i].category}</td>
                         <td><button id"update" onclick="update(${i})">update<button></td>
                         <td><button id"delete" onclick="deleteData(${i})">delete<button></td>   
                     </tr> `;
@@ -188,7 +193,7 @@ function searchData(value) {
                         <td>${dataPro[i].total}</td>
                         <td>${dataPro[i].ads}</td>
                         <td>${dataPro[i].discount}</td>
-                        <td>${dataPro[i].categry}</td>
+                        <td>${dataPro[i].category}</td>
                         <td><button id"update" onclick="update(${i})">update<button></td>
                         <td><button id"delete" onclick="deleteData(${i})">delete<button></td>   
                     </tr> `;
